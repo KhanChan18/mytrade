@@ -1,4 +1,3 @@
-# ctp_logger.py
 from datetime import datetime
 
 class CTPLogger:
