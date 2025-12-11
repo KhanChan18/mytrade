@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """CTP配置管理模块（适配目录配置+自动创建文件夹，默认配置文件CONF.yml）"""
+import ctypes
 import yaml
 import os
 import platform
@@ -35,6 +36,10 @@ except FileNotFoundError as e:
         APP_CONFIG, CONF_LIST = load_config(backup_config_path)
     else:
         raise FileNotFoundError(f"默认配置文件 CONF.yml 不存在（根目录/配置文件夹均未找到）") from e
+
+# Transform those required configurations into constants
+# This code need to be optimized later.
+IS_PRODUCTION_MODE = APP_CONFIG.get("is_production_mode", True)
 
 # ===================== 目录路径配置（自动创建文件夹） =====================
 # 根目录（默认./mytrade，从APP_CONFIG读取）
@@ -74,6 +79,7 @@ CONF_YML_PATH = os.path.join(CONFIG_PATH, "CONF.yml")
 # 流文件基础路径（如 ./mytrade/streams/20251207_）
 STREAM_BASE_PATH = os.path.join(STREAM_PATH, f"{TODAY}_")
 
+
 # ===================== 快捷获取配置（兼容原逻辑） =====================
 def get_config(platform, env):
     """
@@ -88,8 +94,10 @@ def get_config(platform, env):
 
 # ===================== 全局常量 =====================
 # 默认订阅合约
-DEFAULT_INSTRUMENT = b"ag2602"
-DEFAULT_INSTRUMENT_STR = DEFAULT_INSTRUMENT.decode("utf-8")
+INSTRUMENT_LIST = ["au2602", "ag2602", "cu2602", "sn2602", "zn2602"]
+INSTRUMENT_LIST = [inst.encode("utf-8") for inst in INSTRUMENT_LIST]
+# DEFAULT_INSTRUMENT = ctypes.c_char_p(DEFAULT_INSTRUMENT_STR.encode("utf-8"))
+DEFAULT_INSTRUMENT_STR = "au2602"
 
 # 下单默认参数
 ORDER_PARAMS_DEFAULT = {
@@ -112,7 +120,7 @@ ORDER_PARAMS_DEFAULT = {
 # 日志配置（动态路径）
 LOG_CONFIG = {
     "log_file": LOG_FILE,       # 按日期命名的日志文件
-    "log_level": "INFO"        # 日志级别：DEBUG/INFO/ERROR
+    "log_level": APP_CONFIG.get("log_level", "INFO")        # 日志级别：DEBUG/INFO/ERROR
 }
 
 # ===================== 系统编码适配 =====================

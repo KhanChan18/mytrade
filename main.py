@@ -12,7 +12,11 @@ from signal_handler import (
     run_in_background, wait_for_exit,
     stop_background_thread
 )
-from config import CONF_LIST, DEFAULT_INSTRUMENT_STR, ORDER_PARAMS_DEFAULT, get_config, LOG_CONFIG
+from config import (
+    CONF_LIST, DEFAULT_INSTRUMENT_STR, ORDER_PARAMS_DEFAULT,
+    LOG_CONFIG, STREAM_PATH, IS_PRODUCTION_MODE,
+    get_config
+)
 from controller import MarketDataController, TradeController
 from logger import CTPLogger
 
@@ -54,16 +58,22 @@ class CTPClient:
 
         try:
             # ---------------------- 初始化API和控制器 ----------------------
+            # CreateFtdcMdApi and CreateFtdcTraderApi don't take key-words argument 'kwargs'.
+            # First param named 'pszFlowPath' means the dir path where the stream file locates.
+            # The second one name 'bIsProductionMode', which is a binary type, means whether the APIs run
+            # under a productive mode or not(verifying mode). We set 'True' as default value. 
             if api_type == 'md':
                 # 行情初始化（market data）
                 main_logger.info("Main", "初始化行情API（MD）")
-                ctp_api = mdapi.CThostFtdcMdApi.CreateFtdcMdApi()
+                ctp_api = \
+                    mdapi.CThostFtdcMdApi.CreateFtdcMdApi(STREAM_PATH, IS_PRODUCTION_MODE)
                 ctp_ctr = MarketDataController(conf, ctp_api)
                 ctp_api.RegisterFront(conf['md_server'])
             elif api_type == 'trade':
                 # 交易初始化（trade）
                 main_logger.info("Main", "初始化交易API（Trade）")
-                ctp_api = tdapi.CThostFtdcTraderApi.CreateFtdcTraderApi()
+                ctp_api = \
+                    tdapi.CThostFtdcTraderApi.CreateFtdcTraderApi(STREAM_PATH, IS_PRODUCTION_MODE)
                 ctp_ctr = TradeController(conf, ctp_api)
                 # 兼容SIMNOW的trader_server和ZXJT的trade_server
                 trade_server_key = 'trader_server' if 'trader_server' in conf else 'trade_server'
@@ -98,7 +108,7 @@ class CTPClient:
                 if ctp_ctr.login:
                     main_logger.info("Main", "登录成功，开始执行业务操作")
                     # 1. 查询合约
-                    ctp_ctr.QryInstrument(exchangeid="DCE", instrumentid=DEFAULT_INSTRUMENT_STR)
+                    ctp_ctr.QryInstrument(exchangeid="SHFE", instrumentid=DEFAULT_INSTRUMENT_STR)
                     ctp_ctr.semaphore.acquire(timeout=5)
                     time.sleep(0.5)
 

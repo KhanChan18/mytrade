@@ -6,7 +6,7 @@ from openctp_ctp import thosttraderapi as tdapi
 import threading
 from signal_handler import EXIT_FLAG
 from utils import set_req_fields
-from config import DEFAULT_INSTRUMENT, LOG_CONFIG
+from config import INSTRUMENT_LIST, LOG_CONFIG
 from logger import CTPLogger
 
 # ===================== 公共父类（整合td_demo核心逻辑 + 日志类） =====================
@@ -60,7 +60,7 @@ class BaseController:
         if pRspInfo is None:
             self.logger.error("OnRspError", f"RequestID={nRequestID}, pRspInfo为None")
         else:
-            err_msg = pRspInfo.ErrorMsg.decode('gbk', 'ignore') if pRspInfo.ErrorMsg else 'None'
+            err_msg = pRspInfo.ErrorMsg.encode('gbk', 'ignore') if pRspInfo.ErrorMsg else 'None'
             self.logger.error("OnRspError", f"RequestID={nRequestID}, ErrorID={pRspInfo.ErrorID}, Msg={err_msg}")
         self.logger.release_semaphore(bIsLast)
 
@@ -89,7 +89,7 @@ class MarketDataController(BaseController, mdapi.CThostFtdcMdSpi):
             "UserID": self.conf['investor_id'],
             "Password": self.conf['password']
         })
-        self.api.ReqUserLogin(req, self.request_id)
+        res = self.api.ReqUserLogin(req, self.request_id)
 
     def OnRspUserLogin(self, pRspUserLogin, pRspInfo, nRequestID, bIsLast):
         """行情登录响应"""
@@ -109,7 +109,8 @@ class MarketDataController(BaseController, mdapi.CThostFtdcMdSpi):
         self.login = True
         trading_day = pRspUserLogin.TradingDay if pRspUserLogin else '未知'
         self.logger.info("MDController", f"登录成功，交易日: {trading_day}")
-        self.api.SubscribeMarketData([DEFAULT_INSTRUMENT], self.request_id)
+        new_request_id = self.request_id
+        self.api.SubscribeMarketData(INSTRUMENT_LIST, len(INSTRUMENT_LIST))
         self.logger.release_semaphore(bIsLast)
 
     def OnRtnDepthMarketData(self, pDepthMarketData):
@@ -117,10 +118,10 @@ class MarketDataController(BaseController, mdapi.CThostFtdcMdSpi):
         if pDepthMarketData is None:
             self.logger.error("MDController", "行情推送: pDepthMarketData为None")
             return
-        inst_id = pDepthMarketData.InstrumentID.decode("gbk", "ignore") if pDepthMarketData.InstrumentID else "未知合约"
-        last_price = pDepthMarketData.LastPrice if pDepthMarketData.LastPrice else 0.0
-        volume = pDepthMarketData.Volume if pDepthMarketData.Volume else 0
-        self.logger.info("MDController_MarketData", f"{inst_id} 最新价: {last_price} 成交量: {volume}")
+        self.logger.info(
+            "MDController_MarketData",
+            f"{pDepthMarketData.InstrumentID} 最新价: {pDepthMarketData.LastPrice} 成交量: {pDepthMarketData.Volume}"
+        )
 
     def OnRspSubMarketData(self, pSpecificInstrument, pRspInfo, nRequestID, bIsLast):
         """行情订阅响应"""
@@ -133,15 +134,13 @@ class MarketDataController(BaseController, mdapi.CThostFtdcMdSpi):
         # 处理pSpecificInstrument为None的情况
         if pSpecificInstrument is None:
             inst_id = "未知合约"
-        else:
-            inst_id = pSpecificInstrument.InstrumentID.decode("gbk", "ignore") if pSpecificInstrument.InstrumentID else "未知合约"
         
         # 利用日志类的print_error方法
         if self.logger.print_error("MDController_Subscribe", pRspInfo):
             self.logger.release_semaphore(bIsLast)
             return
         
-        self.logger.info("MDController", f"订阅成功: {inst_id}")
+        self.logger.info("MDController", f"订阅成功: {pSpecificInstrument.InstrumentID}")
         self.logger.release_semaphore(bIsLast)
 
 # ===================== 交易控制器（整合td_demo核心逻辑 + 日志类） =====================

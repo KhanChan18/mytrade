@@ -1,5 +1,7 @@
 # CTP服务器配置列表（精准复刻原CONF_LIST）
 APP_CONFIG:
+  is_production_mode: true
+  log_level: "DEBUG"  # 日志级别：DEBUG/INFO/ERROR
   # 根目录配置（默认./mytrade）
   root_path: "./mytrade"
   # 子文件夹命名（简短语义化）
@@ -59,3 +61,12 @@ CTP_SERVER:
       auth_code: '0000000000000000'
       md_server: 'tcp://182.254.243.31:40011'
       trader_server: 'tcp://182.254.243.31:40001'
+  OPENCTP:
+    'simulation_7*24':
+      investor_id: '250881'
+      password: 'chh931118CHH!@#'
+      broker_id: '9999'
+      app_id: ''
+      auth_code: ''
+      md_server: 'tcp://trading.openctp.cn:30011'
+      trader_server: 'tcp://trading.openctp.cn:30001'
