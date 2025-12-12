@@ -93,13 +93,9 @@ def get_config(platform, env):
         raise ValueError(f"配置不存在：platform={platform}, env={env}，错误键：{e}") from e
 
 # ===================== 全局常量 =====================
-# 默认订阅合约
-INSTRUMENT_LIST = ["au2602", "ag2602", "cu2602", "sn2602", "zn2602"]
-INSTRUMENT_LIST = [inst.encode("utf-8") for inst in INSTRUMENT_LIST]
-# DEFAULT_INSTRUMENT = ctypes.c_char_p(DEFAULT_INSTRUMENT_STR.encode("utf-8"))
-DEFAULT_INSTRUMENT_STR = "au2602"
 
 # 下单默认参数
+DEFAULT_INSTRUMENT_STR = "rb2601"  # 默认合约代码
 ORDER_PARAMS_DEFAULT = {
     "ExchangeID": "SHFE",
     "InstrumentID": DEFAULT_INSTRUMENT_STR,

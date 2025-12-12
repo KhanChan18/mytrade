@@ -1,0 +1,125 @@
+# 国内商品期货交易所及上市品种缩写（精简键名+中英注释版，首字母排序）
+SHFE:
+  name: 上海期货交易所
+  full_name: Shanghai Futures Exchange
+  abbr: SHFE
+  products:
+    - ad  # 铝合金（Aluminum Alloy）
+    - ag  # 白银（Silver）
+    - al  # 铝（Aluminum）
+    - ao  # 氧化铝（Alumina）
+    - au  # 黄金（Gold）
+    - br  # 合成橡胶（Synthetic Rubber）
+    - bu  # 沥青（Bitumen）
+    - cu  # 铜（Copper）
+    - fu  # （高硫）燃料油（High Sulfur Fuel Oil）
+    - hc  # 热轧卷板（Hot-Rolled Coil）
+    - ni  # 镍（Nickel）
+    - op  # 双胶纸（Double Offset Paper）
+    - pb  # 铅（Lead）
+    - rb  # 螺纹钢（Rebar）
+    - ru  # 天然橡胶（Natural Rubber）
+    - sn  # 锡（Tin）
+    - sp  # 纸浆（Pulp）
+    - ss  # 不锈钢（Stainless Steel）
+    - wr  # 线材（Wire Rod）
+    - zn  # 锌（Zinc）
+
+INE:
+  name: 上海国际能源交易中心
+  full_name: Shanghai International Energy Exchange
+  abbr: INE
+  products:
+    - bc  # 国际铜（Bulk Copper）
+    - ec  # 欧线集运指数（Europe Route Container Shipping Index）
+    - lu  # 低硫燃料油（Low Sulfur Fuel Oil）
+    - nr  # 20号胶（No.20 Rubber）
+    - sc  # 原油（Shanghai Crude Oil）
+
+CZCE:
+  name: 郑州商品交易所
+  full_name: Zhengzhou Commodity Exchange
+  abbr: CZCE
+  products:
+    - ap  # 苹果（Apple）
+    - cf  # 棉花（Cotton）
+    - cj  # 红枣（Chinese Jujube）
+    - cy  # 棉纱（Cotton Yarn）
+    - fg  # 玻璃（Float Glass）
+    - jr  # 粳稻（Japonica Rice）
+    - lr  # 晚籼稻（Late Indica Rice）
+    - ma  # 甲醇（Methanol）
+    - oi  # 菜籽油（Rapeseed Oil）
+    - pf  # 短纤（Short Fiber）
+    - pk  # 花生（Peanut Kernel）
+    - pl  # 丙烯（Propylene）
+    - pm  # 普通小麦（Common Wheat）
+    - pr  # 瓶片（PET Bottle Flake）
+    - px  # 对二甲苯（Paraxylene）
+    - ri  # 早籼稻（Early Indica Rice）
+    - rm  # 菜籽粕（Rapeseed Meal）
+    - rs  # 油菜籽（Rapeseed）
+    - sa  # 纯碱（Soda Ash）
+    - sh  # 烧碱（Caustic Soda）
+    - si  # 硅铁（Silicon Ferrosilicon）
+    - sm  # 硅锰（Silicon Manganese）
+    - sr  # 白糖（Sugar）
+    - ta  # 精对苯二甲酸（Purified Terephthalic Acid）
+    - ur  # 尿素（Urea）
+    - wh  # 优质强筋小麦（High Quality Strong Gluten Wheat）
+    - zc  # 动力煤（Thermal Coal）
+
+DCE:
+  name: 大连商品交易所
+  full_name: Dalian Commodity Exchange
+  abbr: DCE
+  products:
+    - a   # 黄大豆1号（Yellow Soybean No.1）
+    - b   # 黄大豆2号（Yellow Soybean No.2）
+    - bb  # 胶合板（Blockboard）
+    - bz  # 纯苯（Benzene）
+    - c   # 玉米（Corn）
+    - cs  # 玉米淀粉（Corn Starch）
+    - eb  # 苯乙烯（Styrene）
+    - eg  # 乙二醇（Ethylene Glycol）
+    - fb  # 纤维板（Fiberboard）
+    - i   # 铁矿石（Iron Ore）
+    - j   # 焦炭（Coke）
+    - jd  # 鸡蛋（Egg）
+    - jm  # 焦煤（Coking Coal）
+    - l   # 塑料/LLDPE（Linear Low-Density Polyethylene）
+    - lg  # 原木（Log）
+    - lh  # 生猪（Live Hog）
+    - m   # 豆粕（Soybean Meal）
+    - p   # 棕榈油（Palm Oil）
+    - pg  # 液化气（Liquefied Petroleum Gas）
+    - pp  # 聚丙烯（Polypropylene）
+    - rr  # 粳米（Round Grain Rice）
+    - v   # PVC（Polyvinyl Chloride）
+    - y   # 豆油（Soybean Oil）
+
+GFEX:
+  name: 广州期货交易所
+  full_name: Guangzhou Futures Exchange
+  abbr: GFEX
+  products:
+    - li  # 碳酸锂（Lithium Carbonate）
+    - pa  # 钯（Palladium）
+    - pt  # 铂（Platinum）
+    - ps  # 多晶硅（Polysilicon）
+    - si  # 工业硅（Industrial Silicon）
+
+# 新增：中国金融期货交易所（CFFEX）
+CFFEX:
+  name: 中国金融期货交易所
+  full_name: China Financial Futures Exchange
+  abbr: CFFEX
+  products:
+    - IF  # 沪深300股指期货（CSI 300 Stock Index Futures）
+    - IH  # 上证50股指期货（SSE 50 Stock Index Futures）
+    - IC  # 中证500股指期货（CSI 500 Stock Index Futures）
+    - IM  # 中证1000股指期货（CSI 1000 Stock Index Futures）
+    - TS  # 2年期国债期货（2-Year Treasury Bond Futures）
+    - TF  # 5年期国债期货（5-Year Treasury Bond Futures）
+    - T   # 10年期国债期货（10-Year Treasury Bond Futures）
+    - TL  # 30年期国债期货（30-Year Treasury Bond Futures）

@@ -78,7 +78,7 @@ class CTPLogger:
             return f"{short_file}:{line_no}({func_name})"
 
     def print_log(self, level, prefix, content):
-        """统一日志打印（所有等级都输出行号）"""
+        """统一日志打印（DEBUG级包含行号，INFO/ERROR简化）"""
         # 日志等级标准化
         level = level.upper() if level.upper() in ["DEBUG", "INFO", "ERROR"] else "INFO"
         
@@ -87,10 +87,13 @@ class CTPLogger:
         if level_priority[level] < level_priority[self._log_level]:
             return
         
-        # 构建日志字符串：所有等级都包含行号
+        # 构建日志字符串（按级别区分格式）
         timestamp = self.get_timestamp()
-        caller_info = self.get_caller_info()
-        log_str = f"[{timestamp}] [{level}] [{caller_info}] {prefix}: {content}"
+        if level == "DEBUG":
+            caller_info = self.get_caller_info()  # 获取调用位置（文件:行号(函数)）
+            log_str = f"[{timestamp}] [{level}] [{caller_info}] {prefix}: {content}"
+        else:
+            log_str = f"[{timestamp}] [{level}] {prefix}: {content}"  # INFO/ERROR简化格式
         
         # 控制台输出
         print(log_str)

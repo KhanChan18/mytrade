@@ -1,0 +1,8 @@
+# 排除根目录下的mytrade目录
+/mytrade/
+
+# 排除所有级别的__pycache__目录
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
