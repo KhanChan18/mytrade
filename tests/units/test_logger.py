@@ -3,9 +3,11 @@
 import sys
 import os
 import re
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+# 添加项目根目录到Python路径
+import pathlib
+sys.path.append(str(pathlib.Path(__file__).absolute().parents[2]))
 
-from logger import CTPLogger
+from utils.logger import Logger
 
 def test_logger_info_format():
     """测试INFO级别日志格式"""
@@ -15,15 +17,15 @@ def test_logger_info_format():
     sys.stdout = io.StringIO()
     
     # 创建日志实例
-    logger = CTPLogger(log_file=None, log_level="INFO")
-    logger.info("Test", "这是一条INFO级别日志")
+    logger = Logger(log_file=None, log_level="INFO")
+    logger.info("Test", "This is an INFO level log")
     
     # 获取输出内容
     output = sys.stdout.getvalue().strip()
     sys.stdout = old_stdout
     
     # 验证输出格式（不含调用位置信息）
-    assert re.match(r'^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}\] \[INFO\] Test: 这是一条INFO级别日志$', output)
+    assert re.match(r'^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}\] \[INFO\] Test: This is an INFO level log$', output)
     assert "(" not in output  # 确保没有函数名
     assert ":" not in output.split(" ")[-3]  # 确保没有行号
 
@@ -35,15 +37,15 @@ def test_logger_error_format():
     sys.stdout = io.StringIO()
     
     # 创建日志实例
-    logger = CTPLogger(log_file=None, log_level="INFO")
-    logger.error("Test", "这是一条ERROR级别日志")
+    logger = Logger(log_file=None, log_level="INFO")
+    logger.error("Test", "This is an ERROR level log")
     
     # 获取输出内容
     output = sys.stdout.getvalue().strip()
     sys.stdout = old_stdout
     
     # 验证输出格式（不含调用位置信息）
-    assert re.match(r'^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}\] \[ERROR\] Test: 这是一条ERROR级别日志$', output)
+    assert re.match(r'^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}\] \[ERROR\] Test: This is an ERROR level log$', output)
     assert "(" not in output  # 确保没有函数名
     assert ":" not in output.split(" ")[-3]  # 确保没有行号
 
@@ -55,15 +57,15 @@ def test_logger_debug_format():
     sys.stdout = io.StringIO()
     
     # 创建日志实例
-    logger = CTPLogger(log_file=None, log_level="DEBUG")
-    logger.debug("Test", "这是一条DEBUG级别日志")
+    logger = Logger(log_file=None, log_level="DEBUG")
+    logger.debug("Test", "This is a DEBUG level log")
     
     # 获取输出内容
     output = sys.stdout.getvalue().strip()
     sys.stdout = old_stdout
     
     # 验证输出格式（包含调用位置信息）
-    assert re.match(r'^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}\] \[DEBUG\] \[.*?:\d+\(.*?\)\] Test: 这是一条DEBUG级别日志$', output)
+    assert re.match(r'^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}\] \[DEBUG\] \[.*?:\d+\(.*?\)\] Test: This is a DEBUG level log$', output)
     assert "(" in output  # 确保有函数名
     assert ":" in output.split(" ")[3]  # 确保调用位置信息中包含冒号
 
@@ -76,8 +78,8 @@ def test_logger_level_control():
     old_stdout = sys.stdout
     sys.stdout = io.StringIO()
     
-    logger = CTPLogger(log_file=None, log_level="INFO")
-    logger.debug("Test", "这是一条DEBUG级别日志（应该不显示）")
+    logger = Logger(log_file=None, log_level="INFO")
+    logger.debug("Test", "This is a DEBUG level log (should not display)")
     
     output = sys.stdout.getvalue().strip()
     sys.stdout = old_stdout
@@ -89,7 +91,7 @@ def test_logger_level_control():
     sys.stdout = io.StringIO()
     
     logger._log_level = "DEBUG"
-    logger.debug("Test", "这是一条DEBUG级别日志（应该显示）")
+    logger.debug("Test", "This is a DEBUG level log (should display)")
     
     output = sys.stdout.getvalue().strip()
     sys.stdout = old_stdout

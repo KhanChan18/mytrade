@@ -3,7 +3,7 @@ APP_CONFIG:
   is_production_mode: true
   log_level: "DEBUG"  # 日志级别：DEBUG/INFO/ERROR
   # 根目录配置（默认./mytrade）
-  root_path: "./mytrade"
+  root_path: "mytrade"
   # 子文件夹命名（简短语义化）
   sub_folders:
     log: "logs"        # 存储程序生成的日志文件（按日期）
@@ -11,9 +11,9 @@ APP_CONFIG:
     stream: "streams"  # 存储程序生成的流文件
   # 数据收集配置
   data_collection:
-    db_type: "HDF5"    # 数据库类型：CSV/SQLite3/HDF5
-    buffer_size: 128    # 缓冲区大小，默认128
-    db_path: "db"      # 数据库存储路径
+    db_type: "CSV"    # 数据库类型：CSV/SQLite3/HDF5
+    buffer_size: 64    # 缓冲区大小，默认128
+    db_path: "mydb"      # 数据库存储路径
 
 CTP_SERVER:
   ZXJT:

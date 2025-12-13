@@ -4,11 +4,8 @@ import pandas as pd
 import numpy as np
 from abc import ABC, abstractmethod
 from typing import List, Dict, Any, Optional
-import logging
+from utils.logger import main_logger
 from datetime import datetime
-
-# 获取日志记录器
-logger = logging.getLogger(__name__)
 
 class DatabaseInterface(ABC):
     """数据库接口定义"""
@@ -172,7 +169,7 @@ class DataCollector:
         else:
             raise ValueError(f"Unsupported database type: {db_type}")
         
-        logger.info(f"DataCollector initialized with {db_type} database and buffer size {buffer_size}")
+        main_logger.info("DataCollector", f"initialized with {db_type} database and buffer size {buffer_size}")
     
     def add_data(self, data: Dict[str, Any]) -> None:
         """添加数据到缓冲区"""
@@ -185,7 +182,7 @@ class DataCollector:
     def flush(self) -> None:
         """将缓冲区中的数据写入数据库"""
         if self.buffer:
-            logger.debug(f"Flushing {len(self.buffer)} records to database")
+            main_logger.debug("DataCollector", f"Flushing {len(self.buffer)} records to database")
             self.db_handler.save(self.buffer)
             self.buffer.clear()
     
@@ -205,7 +202,7 @@ class DataCollector:
         """关闭数据库连接，确保缓冲区中的数据被保存"""
         self.flush()
         self.db_handler.close()
-        logger.info("DataCollector closed")
+        main_logger.info("DataCollector", "closed")
 
 # 工厂函数，用于创建DataCollector实例
 def create_data_collector(db_type: str = "HDF5", buffer_size: int = 128, db_path: str = "db") -> DataCollector:

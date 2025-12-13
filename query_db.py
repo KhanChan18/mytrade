@@ -5,10 +5,9 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from data_collection import create_data_collector
+from db import create_data_collector
 from config import DB_TYPE, DB_PATH
 import argparse
-
 
 def main():
     """主函数"""
@@ -65,7 +64,6 @@ def main():
     finally:
         if 'data_collector' in locals():
             data_collector.close()
-
 
 if __name__ == "__main__":
     main()
