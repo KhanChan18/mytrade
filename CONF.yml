@@ -9,6 +9,11 @@ APP_CONFIG:
     log: "logs"        # 存储程序生成的日志文件（按日期）
     config: "conf"     # 存储配置文件CONF.yml
     stream: "streams"  # 存储程序生成的流文件
+  # 数据收集配置
+  data_collection:
+    db_type: "HDF5"    # 数据库类型：CSV/SQLite3/HDF5
+    buffer_size: 128    # 缓冲区大小，默认128
+    db_path: "db"      # 数据库存储路径
 
 CTP_SERVER:
   ZXJT:

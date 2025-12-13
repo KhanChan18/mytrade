@@ -151,3 +151,16 @@ def sync_config_to_conf_folder():
 
 # 执行配置文件同步
 sync_config_to_conf_folder()
+
+# ===================== 数据收集配置 =====================
+# 从APP_CONFIG中获取数据收集配置
+DATA_COLLECTION_CONFIG = APP_CONFIG.get("data_collection", {})
+
+# 数据库类型（默认HDF5）
+DB_TYPE = DATA_COLLECTION_CONFIG.get("db_type", "HDF5")
+
+# 缓冲区大小（默认128）
+BUFFER_SIZE = DATA_COLLECTION_CONFIG.get("buffer_size", 128)
+
+# 数据库存储路径
+DB_PATH = DATA_COLLECTION_CONFIG.get("db_path", "db")

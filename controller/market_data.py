@@ -7,6 +7,8 @@ from . import BaseController
 from .utils import generate_contract_dict
 from signal_handler import EXIT_FLAG
 from utils import set_req_fields
+from data_collection import create_data_collector
+from config import DB_TYPE, BUFFER_SIZE, DB_PATH
 
 # 生成合约列表
 contract_dict = generate_contract_dict(os.path.join(os.path.dirname(__file__), 'instrument.yml'))
@@ -17,6 +19,12 @@ class MarketDataController(BaseController, mdapi.CThostFtdcMdSpi):
     def __init__(self, conf, api):
         mdapi.CThostFtdcMdSpi.__init__(self)
         super().__init__(conf, api)
+        # 初始化数据收集器
+        self.data_collector = create_data_collector(
+            db_type=DB_TYPE,
+            buffer_size=BUFFER_SIZE,
+            db_path=DB_PATH
+        )
 
     def OnFrontConnected(self):
         """行情连接成功"""
@@ -57,10 +65,56 @@ class MarketDataController(BaseController, mdapi.CThostFtdcMdSpi):
         if pDepthMarketData is None:
             self.logger.error("MDController", "行情推送: pDepthMarketData为None")
             return
+        # 将行情对象转换为字典
+        market_data_dict = {
+            "InstrumentID": pDepthMarketData.InstrumentID,
+            "TradingDay": getattr(pDepthMarketData, "TradingDay", ""),
+            "ActionDay": getattr(pDepthMarketData, "ActionDay", ""),
+            "UpdateTime": getattr(pDepthMarketData, "UpdateTime", ""),
+            "UpdateMillisec": getattr(pDepthMarketData, "UpdateMillisec", 0),
+            "LastPrice": getattr(pDepthMarketData, "LastPrice", 0),
+            "Volume": getattr(pDepthMarketData, "Volume", 0),
+            "PreSettlementPrice": getattr(pDepthMarketData, "PreSettlementPrice", 0),
+            "PreClosePrice": getattr(pDepthMarketData, "PreClosePrice", 0),
+            "PreOpenInterest": getattr(pDepthMarketData, "PreOpenInterest", 0),
+            "OpenPrice": getattr(pDepthMarketData, "OpenPrice", 0),
+            "HighestPrice": getattr(pDepthMarketData, "HighestPrice", 0),
+            "LowestPrice": getattr(pDepthMarketData, "LowestPrice", 0),
+            "LimitUpPrice": getattr(pDepthMarketData, "LimitUpPrice", 0),
+            "LimitDownPrice": getattr(pDepthMarketData, "LimitDownPrice", 0),
+            "OpenInterest": getattr(pDepthMarketData, "OpenInterest", 0),
+            "Turnover": getattr(pDepthMarketData, "Turnover", 0),
+            "AveragePrice": getattr(pDepthMarketData, "AveragePrice", 0),
+            # 买卖盘口数据
+            "BidPrice1": getattr(pDepthMarketData, "BidPrice1", 0),
+            "BidVolume1": getattr(pDepthMarketData, "BidVolume1", 0),
+            "AskPrice1": getattr(pDepthMarketData, "AskPrice1", 0),
+            "AskVolume1": getattr(pDepthMarketData, "AskVolume1", 0),
+            "BidPrice2": getattr(pDepthMarketData, "BidPrice2", 0),
+            "BidVolume2": getattr(pDepthMarketData, "BidVolume2", 0),
+            "AskPrice2": getattr(pDepthMarketData, "AskPrice2", 0),
+            "AskVolume2": getattr(pDepthMarketData, "AskVolume2", 0),
+            "BidPrice3": getattr(pDepthMarketData, "BidPrice3", 0),
+            "BidVolume3": getattr(pDepthMarketData, "BidVolume3", 0),
+            "AskPrice3": getattr(pDepthMarketData, "AskPrice3", 0),
+            "AskVolume3": getattr(pDepthMarketData, "AskVolume3", 0),
+            "BidPrice4": getattr(pDepthMarketData, "BidPrice4", 0),
+            "BidVolume4": getattr(pDepthMarketData, "BidVolume4", 0),
+            "AskPrice4": getattr(pDepthMarketData, "AskPrice4", 0),
+            "AskVolume4": getattr(pDepthMarketData, "AskVolume4", 0),
+            "BidPrice5": getattr(pDepthMarketData, "BidPrice5", 0),
+            "BidVolume5": getattr(pDepthMarketData, "BidVolume5", 0),
+            "AskPrice5": getattr(pDepthMarketData, "AskPrice5", 0),
+            "AskVolume5": getattr(pDepthMarketData, "AskVolume5", 0),
+        }
+
         self.logger.info(
             "MDController_MarketData",
             f"{pDepthMarketData.InstrumentID} 最新价: {pDepthMarketData.LastPrice} 成交量: {pDepthMarketData.Volume}"
         )
+        
+        # 将行情数据添加到数据收集器
+        self.data_collector.add_data(market_data_dict)
 
     def OnRspSubMarketData(self, pSpecificInstrument, pRspInfo, nRequestID, bIsLast):
         """行情订阅响应"""
