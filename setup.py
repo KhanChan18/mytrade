@@ -2,9 +2,16 @@ from setuptools import setup, find_packages
 import os
 
 # 读取requirements.txt文件
+
+
 def read_requirements():
-    with open(os.path.join(os.path.dirname(__file__), 'requirements.txt'), 'r') as f:
-        return [line.strip() for line in f if line.strip() and not line.startswith('#')]
+    with open(os.path.join(os.path.dirname(__file__), 'requirements.txt'),
+              'r') as f:
+        return [
+            line.strip() for line in f
+            if line.strip() and not line.startswith('#')
+        ]
+
 
 setup(
     name="mytrade",

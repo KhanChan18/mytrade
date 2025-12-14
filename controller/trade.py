@@ -8,8 +8,10 @@ from utils.misc import set_req_fields
 
 class TradeController(BaseController):
     """交易控制器"""
+
     def __init__(self, conf, api):
-        super().__init__(conf, api)
+        super().__init__(api)
+        self.conf = conf
         # 创建并注册交易数据SPI回调
         self.spi = TradeSpi(self)
         self.api.RegisterSpi(self.spi)

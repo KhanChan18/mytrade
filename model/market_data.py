@@ -7,6 +7,7 @@ class MarketData:
     行情数据模型类
     用于封装CTP API返回的行情数据
     """
+
     def __init__(self, pDepthMarketData):
         """
         初始化行情数据模型
@@ -19,7 +20,8 @@ class MarketData:
         self.UpdateMillisec = getattr(pDepthMarketData, "UpdateMillisec", 0)
         self.LastPrice = getattr(pDepthMarketData, "LastPrice", 0)
         self.Volume = getattr(pDepthMarketData, "Volume", 0)
-        self.PreSettlementPrice = getattr(pDepthMarketData, "PreSettlementPrice", 0)
+        self.PreSettlementPrice = getattr(
+            pDepthMarketData, "PreSettlementPrice", 0)
         self.PreClosePrice = getattr(pDepthMarketData, "PreClosePrice", 0)
         self.PreOpenInterest = getattr(pDepthMarketData, "PreOpenInterest", 0)
         self.OpenPrice = getattr(pDepthMarketData, "OpenPrice", 0)
@@ -30,7 +32,7 @@ class MarketData:
         self.OpenInterest = getattr(pDepthMarketData, "OpenInterest", 0)
         self.Turnover = getattr(pDepthMarketData, "Turnover", 0)
         self.AveragePrice = getattr(pDepthMarketData, "AveragePrice", 0)
-        
+
         # 买卖盘口数据
         self.BidPrice1 = getattr(pDepthMarketData, "BidPrice1", 0)
         self.BidVolume1 = getattr(pDepthMarketData, "BidVolume1", 0)

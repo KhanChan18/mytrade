@@ -1,4 +1,5 @@
-# signal_handler.py
+# -*- coding: utf-8 -*-
+"""信号处理模块"""
 import signal
 import threading
 import time
@@ -9,19 +10,25 @@ EXIT_FLAG = threading.Event()
 # 用于跟踪所有后台线程
 background_threads = []
 
+
 def signal_handler(signum, frame):
     """信号处理函数：捕获Ctrl+C/SIGTERM，确保只处理一次"""
     if not EXIT_FLAG.is_set():
-        print(f"\nReceived signal {signum} (SIGINT/SIGTERM), exiting gracefully...")
+        print(
+            f"\nReceived signal {signum} (SIGINT/SIGTERM), "
+            f"exiting gracefully..."
+        )
         EXIT_FLAG.set()
         # 立即终止主程序，避免重复处理信号
         sys.exit(0)
 
+
 def register_signals():
     """注册信号监听"""
-    signal.signal(signal.SIGINT, signal_handler)   # 捕获Ctrl+C
+    signal.signal(signal.SIGINT, signal_handler)  # 捕获Ctrl+C
     signal.signal(signal.SIGTERM, signal_handler)  # 捕获kill命令
     # Windows不支持signal.siginterrupt，移除该调用
+
 
 def run_in_background(func, *args, daemon=True):
     """
@@ -44,6 +51,7 @@ def run_in_background(func, *args, daemon=True):
     # 跟踪后台线程
     background_threads.append(thread)
     return thread
+
 
 def wait_for_exit():
     """主线程等待退出标志触发"""
@@ -71,6 +79,9 @@ def stop_all_background_threads(timeout=2):
         if thread.is_alive():
             thread.join(timeout=timeout)
             if thread.is_alive():
-                print(f"Warning: Background thread did not exit within {timeout}s")
+                print(
+                    "Warning: Background thread did not exit within "
+                    f"{timeout}s"
+                )
     # 清空线程列表
     background_threads.clear()

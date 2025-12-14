@@ -4,15 +4,17 @@
 # 业务对象打印字段模板（保持不变）
 LOG_TEMPLATES = {
     "Order": [
-        "UserID", "BrokerID", "InvestorID", "ExchangeID", "InstrumentID",
-        "Direction", "CombOffsetFlag", "CombHedgeFlag", "OrderPriceType",
-        "LimitPrice", "VolumeTotalOriginal", "FrontID", "SessionID", "OrderRef",
+        "UserID", "BrokerID", "InvestorID", "ExchangeID",
+        "InstrumentID", "Direction", "CombOffsetFlag", "CombHedgeFlag",
+        "OrderPriceType", "LimitPrice", "VolumeTotalOriginal", "FrontID",
+        "SessionID", "OrderRef",
         "TimeCondition", "VolumeCondition", "MinVolume", "RequestID",
         "InvestUnitID", "CurrencyID", "AccountID", "ClientID", "IPAddress",
         "MacAddress", "OrderSysID", "OrderStatus", "StatusMsg", "VolumeTotal",
         "VolumeTraded", "OrderSubmitStatus", "TradingDay", "InsertDate",
-        "InsertTime", "UpdateTime", "CancelTime", "UserProductInfo",
-        "ActiveUserID", "BrokerOrderSeq", "TraderID", "ParticipantID", "OrderLocalID"
+        "InsertTime", "UpdateTime", "CancelTime",
+        "UserProductInfo", "ActiveUserID", "BrokerOrderSeq",
+        "TraderID", "ParticipantID", "OrderLocalID"
     ],
     "Trade": [
         "BrokerID", "InvestorID", "ExchangeID", "InstrumentID", "Direction",
@@ -21,10 +23,12 @@ LOG_TEMPLATES = {
         "OrderLocalID", "BrokerOrderSeq", "InvestUnitID", "ParticipantID"
     ],
     "Position": [
-        "InstrumentID", "ExchangeID", "HedgeFlag", "PositionDate", "PosiDirection",
-        "Position", "YdPosition", "TodayPosition", "UseMargin", "PreMargin",
-        "FrozenMargin", "Commission", "FrozenCommission", "CloseProfit",
-        "LongFrozen", "ShortFrozen", "PositionCost", "OpenCost", "SettlementPrice"
+        "InstrumentID", "ExchangeID", "HedgeFlag", "PositionDate",
+        "PosiDirection", "Position", "YdPosition", "TodayPosition",
+        "UseMargin", "PreMargin", "FrozenMargin", "Commission",
+        "FrozenCommission", "CloseProfit",
+        "LongFrozen", "ShortFrozen", "PositionCost",
+        "OpenCost", "SettlementPrice"
     ],
     "Instrument": [
         "InstrumentID", "InstrumentName", "ExchangeID", "ProductClass",

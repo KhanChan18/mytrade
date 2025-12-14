@@ -1,8 +1,9 @@
-# -*- coding: utf-8 -*-
-"""交易客户端入口文件"""
+# -*- coding: utf-8 -*-"""交易客户端入口文件"""
 import fire
-from client import TradingClient, ProcessManager
+from client import ExchangeClient, ProcessManager
 from utils.logger import main_logger
+from config import COLLECTOR_COUNT, DATA_COLLECTION_CONFIG
+from utils.context import AppContext
 
 
 class MyTradeApp:
@@ -13,46 +14,52 @@ class MyTradeApp:
     - data_collector: 创建行情数据收集守护进程/服务
     - trade_controller: 创建交易控制守护进程/服务
     """
-    
-    def __init__(self):
-        """初始化应用"""
-        self._trading_client = TradingClient()
-        self._process_manager = ProcessManager(self._trading_client)
-    
+
+    def __init__(self, config_path="boot.yml"):
+        """
+        初始化应用
+
+        :param config_path: 应用核心配置文件路径，默认boot.yml
+        """
+        # 创建应用上下文，使用指定的配置文件路径
+        self.app_context = AppContext(app_config_path=config_path)
+        # 初始化交易客户端，传递应用上下文
+        self._trading_client = ExchangeClient(app_context=self.app_context)
+        # 初始化进程管理器，传递应用上下文
+        self._process_manager = ProcessManager(self._trading_client,
+                                               app_context=self.app_context)
+
     # 核心业务方法
-    def run(self, platform="SIMNOW", env="simulation_7*24", api_type="trade"):
+    def run(self):
         """
         手动启动CTP客户端（非守护进程模式）
         用于程序验证、测试和手动操作场景
-        
-        :param platform: 接入平台，可选 SIMNOW/ZXJT，默认 SIMNOW
-        :param env: 运行环境，如 simulation_7*24/verifying/simulation_0，默认 simulation_7*24
-        :param api_type: 功能类型，可选 md（行情）/trade（交易），默认 trade
         """
-        self._trading_client.run(platform, env, api_type)
-    
+        self._trading_client.run()
+
     # 进程管理方法
-    def data_collector(self, platform="SIMNOW", env="simulation_7*24", collector_id=None, count=None):
+    def data_collector(self,
+                       platform="SIMNOW",
+                       env="simulation_7*24",
+                       collector_id=None,
+                       count=None,
+                       exchanges="all"):
         """
         创建行情数据收集守护进程/服务
         可启动多个进程同时收集行情数据，每个进程拥有独立的UUID和日志文件
-        
-        :param platform: 接入平台，默认 SIMNOW
-        :param env: 运行环境，默认 simulation_7*24
-        :param collector_id: 收集器ID，如果未提供则自动生成UUID（仅单进程模式有效）
-        :param count: 收集器进程数量，如果未提供则使用配置文件中的COLLECTOR_COUNT
         """
-        self._process_manager.data_collector(platform, env, collector_id, count)
-    
+        self._process_manager.data_collector(platform=platform,
+                                             env=env,
+                                             collector_id=collector_id,
+                                             count=count,
+                                             exchanges=exchanges)
+
     def trade_controller(self, platform="SIMNOW", env="simulation_7*24"):
         """
         创建交易控制守护进程/服务
         只允许启动一个进程，用于控制交易执行
-        
-        :param platform: 接入平台，默认 SIMNOW
-        :param env: 运行环境，默认 simulation_7*24
         """
-        self._process_manager.trade_controller(platform, env)
+        self._process_manager.trade_controller(platform=platform, env=env)
 
 
 # ===================== 程序入口（支持命令行 + 直接运行） =====================
