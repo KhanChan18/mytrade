@@ -1,0 +1,81 @@
+# CTP服务器配置列表（精准复刻原CONF_LIST）
+APP_CONFIG:
+  is_production_mode: true
+  log_level: "DEBUG"  # 日志级别：DEBUG/INFO/ERROR
+  platform: "SIMNOW"
+  env: "simulation_7*24"
+  # 根目录配置（默认./mytrade）
+  root_path: "appfiles"
+  # 子文件夹命名（简短语义化）
+  sub_folders:
+    log: "logs"        # 存储程序生成的日志文件（按日期）
+    config: "conf"     # 存储配置文件CONF.yml
+    stream: "streams"  # 存储程序生成的流文件
+  # 数据收集配置
+  data_collection:
+    db_type: "hdf5"    # 数据库类型：CSV/SQLite3/HDF5
+    buffer_size: 64    # 缓冲区大小，默认128
+    db_path: "mydb"      # 数据库存储路径
+    collector_count: 1   # 数据收集器进程数量，默认1
+    exchanges: "all"      # 要订阅的交易所，默认all，可设置为交易所缩写列表如SHFE,DCE
+
+CTP_SERVER:
+  ZXJT:
+    verifying:
+      investor_id: '12345678'
+      password: 'CS123456'
+      broker_id: '6666'
+      app_id: 'client_syldavia_0.0.1'
+      auth_code: 'FSH2IH17WDVB3S5J'
+      md_server: 'tcp://61.186.254.131:42213'
+      trade_server: 'tcp://61.186.254.131:42205'
+    simulation:
+      investor_id: '50004711'
+      password: 'P12345678'
+      broker_id: '6666'
+      app_id: 'client_syldavia_0.0.1'
+      auth_code: 'FSH2IH17WDVB3S5J'
+      md_server: 'tcp://61.186.254.137:33435'
+      trade_server: 'tcp://61.186.254.137:33433'
+  SIMNOW:
+    simulation_0:
+      investor_id: '250881'
+      password: 'chh931118CHH!@#'
+      broker_id: '9999'
+      app_id: 'simnow_client_test'
+      auth_code: '0000000000000000'
+      md_server: 'tcp://182.254.243.31:30011'
+      trader_server: 'tcp://182.254.243.31:30001'
+    simulation_1:
+      investor_id: '250881'
+      password: 'chh931118CHH!@#'
+      broker_id: '9999'
+      app_id: 'simnow_client_test'
+      auth_code: '0000000000000000'
+      md_server: 'tcp://182.254.243.31:30012'
+      trader_server: 'tcp://182.254.243.31:30002'
+    simulation_2:
+      investor_id: '250881'
+      password: 'chh931118CHH!@#'
+      broker_id: '9999'
+      app_id: 'simnow_client_test'
+      auth_code: '0000000000000000'
+      md_server: 'tcp://182.254.243.31:30013'
+      trader_server: 'tcp://182.254.243.31:30003'
+    simulation_7*24:
+      investor_id: '250881'
+      password: 'chh931118CHH!@#'
+      broker_id: '9999'
+      app_id: 'simnow_client_test'
+      auth_code: '0000000000000000'
+      md_server: 'tcp://182.254.243.31:40011'
+      trader_server: 'tcp://182.254.243.31:40001'
+  OPENCTP:
+    'simulation_7*24':
+      investor_id: '250881'
+      password: 'chh931118CHH!@#'
+      broker_id: '9999'
+      app_id: ''
+      auth_code: ''
+      md_server: 'tcp://trading.openctp.cn:30011'
+      trader_server: 'tcp://trading.openctp.cn:30001'

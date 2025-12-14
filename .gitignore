@@ -1,8 +1,47 @@
-# 排除根目录下的mytrade目录
-/mytrade/
-
 # 排除所有级别的__pycache__目录
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+
+# 配置文件目录
+mytrade/conf/
+
+# 日志文件目录
+mytrade/logs/
+*.log
+
+# 数据库文件目录
+mytrade/db/
+mydb/
+db_test_*/
+
+# 流文件目录
+mytrade/streams/
+
+# 虚拟环境
+venv/
+env/
+.venv/
+
+# IDE相关文件
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 临时文件
+*.tmp
+*.temp
+
+# 性能测试临时数据
+performance_test_data/
+
+# Python包安装相关文件
+build/
+dist/
+*.egg-info/
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
