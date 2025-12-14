@@ -17,7 +17,7 @@ class ExchangeClient:
         self.market_data_client = MarketDataClient()
         self.trade_client = TradeClient()
 
-    def run(self, platform=None, env=None, api_type=None, exchanges=None):
+    def run(self, api_type=None, exchanges=None):
         """
         启动CTP客户端（兼容原有逻辑的入口函数）
         :param platform: 接入平台，可选 SIMNOW/ZXJT，默认从app_context获取
@@ -27,33 +27,16 @@ class ExchangeClient:
         :param exchanges: 要订阅的交易所，可选 all 或交易所缩写列表（如 SHFE,DCE），
         默认从app_context获取
         """
-        # 从app_context获取默认配置
-        default_platform = self.app_context.app_config.get(
-            "default_platform", "SIMNOW")
-        default_env = self.app_context.app_config.get("default_env",
-                                                      "simulation_7*24")
-        default_api_type = self.app_context.app_config.get(
-            "default_api_type", "trade")
-        default_exchanges = self.app_context.app_config.get(
-            "default_exchanges", "all")
 
-        # 使用传入的参数或默认值
-        actual_platform = platform or default_platform
-        actual_env = env or default_env
-        actual_api_type = api_type or default_api_type
-        actual_exchanges = exchanges or default_exchanges
-
-        if actual_api_type == 'md':
-            self.market_data_client.run(actual_platform,
-                                        actual_env,
-                                        exchanges=actual_exchanges,
-                                        app_context=self.app_context)
-        elif actual_api_type == 'trade':
-            self.trade_client.run(actual_platform,
-                                  actual_env,
-                                  app_context=self.app_context)
+        if api_type == 'md':
+            self.market_data_client.run(
+                exchanges=exchanges,
+                app_context=self.app_context
+            )
+        elif api_type == 'trade':
+            self.trade_client.run(app_context=self.app_context)
         else:
             raise ValueError(
-                f"Unsupported API type: {actual_api_type}, "
+                f"Unsupported API type: {api_type}, "
                 "only supports md (market data)/trade (trade)"
             )

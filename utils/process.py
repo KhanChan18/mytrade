@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 """交易客户端进程管理逻辑"""
-import os
-import uuid
 import multiprocessing
+import os
+import time
+import threading
+import uuid
+
 from config import LOG_CONFIG, LOG_PATH, COLLECTOR_COUNT
 from utils.logger import main_logger
+from utils.signal import EXIT_FLAG
 
 
 class ProcessManager:
@@ -22,8 +26,7 @@ class ProcessManager:
         self.trading_client = trading_client
         self.app_context = app_context
 
-    def data_collector(self, platform="SIMNOW", env="simulation_7*24",
-                       collector_id=None, count=None, exchanges="all"):
+    def data_collector(self, collector_id=None, count=None, exchanges="all", dev_test=False):
         """
         启动行情数据收集器模式
         :param platform: 接入平台，默认 SIMNOW
@@ -31,6 +34,7 @@ class ProcessManager:
         :param collector_id: 收集器ID，如果未提供则自动生成UUID（仅单进程模式有效）
         :param count: 收集器进程数量，如果未提供则使用配置文件中的COLLECTOR_COUNT
         :param exchanges: 要订阅的交易所，可选 all 或交易所缩写列表（如 SHFE,DCE），默认 all
+        :param dev_test: 开发测试模式，60秒后自动终止，默认False
         """
         # 确定收集器进程数量
         num_collectors = count if count is not None else COLLECTOR_COUNT
@@ -74,8 +78,9 @@ class ProcessManager:
                 proc = multiprocessing.Process(
                     target=self._data_collector_process,
                     args=(
-                        platform, env, collector_uuid,
-                        ','.join(process_exchanges)
+                        collector_uuid,
+                        ','.join(process_exchanges),
+                        dev_test
                     )
                 )
                 processes.append(proc)
@@ -94,19 +99,16 @@ class ProcessManager:
             # 单进程模式 - 处理所有交易所
             if collector_id is None:
                 collector_id = str(uuid.uuid4())
-            self._data_collector_process(
-                platform, env, collector_id, exchanges
-            )
+            self._data_collector_process(collector_id, exchanges, dev_test)
 
-    def _data_collector_process(
-        self, platform, env, collector_id, exchanges="all"
-    ):
+    def _data_collector_process(self, collector_id, exchanges="all", dev_test=False):
         """
         单个数据收集器进程的入口函数
         :param platform: 接入平台
         :param env: 运行环境
         :param collector_id: 收集器ID
         :param exchanges: 要订阅的交易所，可选 all 或交易所缩写列表（如 SHFE,DCE），默认 all
+        :param dev_test: 开发测试模式，60秒后自动终止，默认False
         """
         # 设置独立日志配置
         collector_log_file = os.path.join(
@@ -117,76 +119,51 @@ class ProcessManager:
             # 动态修改日志文件路径
             main_logger.set_log_file(collector_log_file)
             main_logger.set_log_level(LOG_CONFIG["log_level"])
-
+            # 开发测试模式：60秒后自动终止
+            if dev_test:
+                # 启动自动退出线程
+                exit_thread = threading.Thread(target=_auto_exit, daemon=True)
+                exit_thread.start()
             main_logger.info(
                 "Main",
                 f"Starting data_collector | ID: {collector_id} | "
-                f"Platform: {platform} | "
-                f"Environment: {env} | "
+                f"TCP Address: {self.app_context.ctp_server['md_server']} | "
                 f"Exchanges: {exchanges}"
+                f"{' | Dev test mode' if dev_test else ''}"
             )
             # 运行行情数据收集逻辑
-            self.trading_client.run(
-                platform, env, api_type="md", exchanges=exchanges
-            )
+            self.trading_client.run(api_type="md", exchanges=exchanges)
         finally:
             # 恢复原始日志文件路径
             main_logger.set_log_file(LOG_CONFIG["log_file"])
 
-    def _is_trade_controller_running(self):
+    def trade_controller(self):
         """
-        检查是否已有trade_controller进程在运行
-        通过检查锁文件实现唯一性
-        """
-        lock_file_path = os.path.join(LOG_PATH, "trade_controller.lock")
-
-        # 尝试创建锁文件
-        try:
-            # 使用os.O_EXCL标志确保文件不存在时才创建
-            fd = os.open(
-                lock_file_path,
-                os.O_CREAT | os.O_EXCL | os.O_WRONLY,
-                0o644
-            )
-            os.close(fd)
-            return False
-        except FileExistsError:
-            # 检查锁文件是否是由运行中的进程持有
-            # 简单实现：检查文件是否存在即可
-            return True
-
-    def trade_controller(self, platform="SIMNOW", env="simulation_7*24"):
-        """
-        启动交易控制器模式（只允许一个进程）
+        启动交易控制器模式（允许启动多个进程）
         :param platform: 接入平台，默认 SIMNOW
         :param env: 运行环境，默认 simulation_7*24
         """
-        # 检查是否已有trade_controller进程在运行
-        if self._is_trade_controller_running():
-            print("Error: trade_controller process is already running. "
-                  "Only one instance is allowed.")
-            return
-
         main_logger.info(
             "Main",
-            f"Starting trade_controller | Platform: {platform} | "
-            f"Environment: {env}"
+            "Starting trade_controller to "
+            f"{self.app_context.ctp_server['trade_server']}"
         )
-
-        # 设置独立日志配置
+        # 设置独立日志文件
         trade_logger_file = os.path.join(LOG_PATH, "trade_controller.log")
-
         try:
             # 动态修改日志文件路径
             main_logger.set_log_file(trade_logger_file)
             main_logger.set_log_level(LOG_CONFIG["log_level"])
 
             # 运行交易控制逻辑
-            self.trading_client.run(platform, env, api_type="trade")
+            self.trading_client.run(api_type="trade")
         finally:
             # 恢复原始日志文件路径
             main_logger.set_log_file(LOG_CONFIG["log_file"])
-            # 删除锁文件
-            lock_file_path = os.path.join(LOG_PATH, "trade_controller.lock")
-            if os.path.exists(lock_file_path):
-                os.remove(lock_file_path)
+
+
+def _auto_exit(sec=5):
+    main_logger.info("Main", f"Dev test mode: Auto exit in {sec} seconds...")
+    time.sleep(sec)
+    main_logger.info("Main", f"Dev test mode: Exiting now...")
+    EXIT_FLAG.set()

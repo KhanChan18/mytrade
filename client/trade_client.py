@@ -51,7 +51,7 @@ class TradeClient:
         """初始化：注册信号监听"""
         register_signals()
 
-    def _setup_api(self, ctp_api, app_context, platform, env):
+    def _setup_api(self, ctp_api, app_context):
         """
         设置API
         :param ctp_api: CTP API实例
@@ -61,16 +61,8 @@ class TradeClient:
         :return: TradeController实例
         """
         main_logger.info("Main", "Initializing trade API (Trade)")
-
-        # 从app_context获取配置
-        conf = app_context.ctp_server[platform][env]
-
-        # 创建交易控制器
-        ctp_ctr = TradeController(conf, ctp_api)
-        # 兼容SIMNOW的trader_server和ZXJT的trade_server
-        trade_server_key = 'trader_server' if 'trader_server' in conf else 'trade_server'
-        ctp_api.RegisterFront(conf[trade_server_key])
-        # 交易专属配置
+        ctp_ctr = TradeController(app_context.ctp_server, ctp_api)
+        ctp_api.RegisterFront(app_context.ctp_server["trade_server"])
         ctp_api.SubscribePrivateTopic(tdapi.THOST_TERT_QUICK)
         ctp_api.SubscribePublicTopic(tdapi.THOST_TERT_QUICK)
         return ctp_ctr
@@ -135,21 +127,17 @@ class TradeClient:
 
         try:
             # 使用上下文管理器管理API资源
-            with CTPAPIContext(api_create_func=tdapi.CThostFtdcTraderApi.
-                               CreateFtdcTraderApi,
-                               create_args=(STREAM_PATH,
-                                            IS_PRODUCTION_MODE)) as ctp_api:
+            with CTPAPIContext(
+                api_create_func=tdapi.CThostFtdcTraderApi.
+                CreateFtdcTraderApi,
+                create_args=(STREAM_PATH, IS_PRODUCTION_MODE)
+            ) as ctp_api:
                 # 设置API
-                ctp_ctr = self._setup_api(ctp_api, app_context, platform, env)
-
+                ctp_ctr = self._setup_api(ctp_api, app_context)
                 # 启动API
                 self._start_api(ctp_ctr)
-
                 try:
-                    # 登录
                     self._login(ctp_ctr)
-
-                    # 执行业务操作
                     self._execute_business_operations(ctp_ctr)
                 except TimeoutError as e:
                     main_logger.error("Main", f"Login failed: {e}")

@@ -9,7 +9,7 @@ from controller.tools import (
     generate_contract_exchange_map,
     generate_contract_dict
 )
-from config import load_config as load_app_config
+from config import load_config, get_server_config
 
 
 class CTPAPIContext:
@@ -94,8 +94,12 @@ class AppContext:
         加载应用核心配置信息
         """
         # 加载应用核心配置
-        self.app_config, self.ctp_server = \
-            load_app_config(self.app_config_path)
+        self.app_config, ctp_server_list = \
+            load_config(self.app_config_path)
+        self.ctp_server = get_server_config(
+            self.app_config["platform"],
+            self.app_config["env"]
+        )
 
     def __getitem__(self, key: str) -> Any:
         """

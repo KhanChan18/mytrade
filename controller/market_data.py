@@ -10,7 +10,7 @@ from utils.misc import set_req_fields
 from db import create_data_collector
 from config import DB_TYPE, BUFFER_SIZE, DB_PATH
 from utils.logger import main_logger
-
+from controller.tools import generate_contract_dict, generate_contract_exchange_map, init_contract_exchange_map
 # 直接导入整个tools模块，以确保我们使用的是全局变量的引用
 import controller.tools as tools
 
@@ -25,9 +25,9 @@ class MarketDataController(BaseController):
     行情控制器
     """
 
-    def __init__(self, conf, api, exchanges="all", app_context=None):
+    def __init__(self, api, exchanges="all", app_context=None):
         super().__init__(api, app_context)
-        self.conf = conf
+        self.conf = app_context.ctp_server
 
         # 初始化应用上下文（如果没有提供）
         if app_context is None:
@@ -36,14 +36,11 @@ class MarketDataController(BaseController):
         else:
             self.app_context = app_context
 
-        # 直接从instrument.yml加载合约配置，不依赖AppContext
-        from controller.tools import generate_contract_dict, generate_contract_exchange_map, init_contract_exchange_map
-
         # 更新全局变量和tools模块的全局变量
         global contract_dict
         contract_dict = generate_contract_dict()  # 使用默认的instrument.yml路径
-        tools.contract_exchange_map = generate_contract_exchange_map(
-        )  # 使用默认的instrument.yml路径
+        tools.contract_exchange_map = generate_contract_exchange_map() 
+        # 使用默认的instrument.yml路径
         init_contract_exchange_map()  # 使用默认的instrument.yml路径
 
         # 调试：检查contract_exchange_map是否已经初始化
