@@ -26,7 +26,8 @@ class BaseController:
         self._request_id += 1
         return self._request_id
 
-    def send_request(self, req_type, req_fields, api_method_name, *args, **kwargs):
+    def send_request(self, req_type, req_fields, api_method_name, *args,
+                     **kwargs):
         """标准化的请求发送方法
 
         Args:
@@ -99,13 +100,15 @@ class BaseController:
     def OnRspError(self, pRspInfo, nRequestID, bIsLast):
         """公共错误回调"""
         if pRspInfo is None:
-            main_logger.error(
-                "OnRspError", f"RequestID={nRequestID}, pRspInfo is None")
+            main_logger.error("OnRspError",
+                              f"RequestID={nRequestID}, pRspInfo is None")
         else:
             err_msg = pRspInfo.ErrorMsg.encode(
                 'gbk', 'ignore') if pRspInfo.ErrorMsg else 'None'
             main_logger.error(
-                "OnRspError", f"RequestID={nRequestID}, ErrorID={pRspInfo.ErrorID}, Msg={err_msg}")
+                "OnRspError",
+                f"RequestID={nRequestID}, ErrorID={pRspInfo.ErrorID}, Msg={err_msg}"
+            )
         self.semaphore.release(bIsLast)
 
     def check_response_error(self, component_name, pRspInfo, error_type=""):
@@ -121,8 +124,8 @@ class BaseController:
         """
         # 处理pRspInfo为None的情况
         if pRspInfo is None:
-            main_logger.error(
-                component_name, f"{error_type} failed: pRspInfo is None")
+            main_logger.error(component_name,
+                              f"{error_type} failed: pRspInfo is None")
             EXIT_FLAG.set()
             return True
 

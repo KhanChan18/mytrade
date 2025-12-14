@@ -39,7 +39,9 @@ class HDF5Handler(DatabaseInterface):
                 # 写入HDF5文件
                 store.append(instrument_id, df, format='table', append=True)
 
-    def load(self, table_name: str, limit: Optional[int] = None) -> pd.DataFrame:
+    def load(self,
+             table_name: str,
+             limit: Optional[int] = None) -> pd.DataFrame:
         with pd.HDFStore(self.db_file, mode='r') as store:
             if table_name not in store:
                 raise KeyError(f"Table {table_name} not found")

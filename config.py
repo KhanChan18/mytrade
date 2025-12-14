@@ -115,10 +115,7 @@ def setup_system_encoding():
         sys.stdout.reconfigure(encoding='utf-8')
     else:
         import locale
-        try:
-            locale.setlocale(locale.LC_ALL, 'zh_CN.UTF-8')
-        except:
-            pass
+        locale.setlocale(locale.LC_ALL, 'zh_CN.UTF-8')
 
 
 setup_system_encoding()

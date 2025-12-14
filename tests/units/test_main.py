@@ -46,6 +46,6 @@ def test_trade_controller_method():
 if __name__ == "__main__":
     # 运行测试
     test_data_collector_method()
-    print("\n" + "="*50 + "\n")
+    print("\n" + "=" * 50 + "\n")
     test_trade_controller_method()
     print("\nAll tests completed!")

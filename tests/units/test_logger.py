@@ -27,7 +27,8 @@ def test_logger_info_format():
 
     # 验证输出格式（不含调用位置信息）
     assert re.match(
-        r'^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}\] \[INFO\] Test: This is an INFO level log$', output)
+        r'^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}\] \[INFO\] Test: This is an INFO level log$',
+        output)
     assert "(" not in output  # 确保没有函数名
     assert ":" not in output.split(" ")[-3]  # 确保没有行号
 
@@ -48,7 +49,8 @@ def test_logger_error_format():
 
     # 验证输出格式（不含调用位置信息）
     assert re.match(
-        r'^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}\] \[ERROR\] Test: This is an ERROR level log$', output)
+        r'^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}\] \[ERROR\] Test: This is an ERROR level log$',
+        output)
     assert "(" not in output  # 确保没有函数名
     assert ":" not in output.split(" ")[-3]  # 确保没有行号
 
@@ -69,7 +71,8 @@ def test_logger_debug_format():
 
     # 验证输出格式（包含调用位置信息）
     assert re.match(
-        r'^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}\] \[DEBUG\] \[.*?:\s*\d+\(.*?\)\] Test: This is a DEBUG level log$', output)
+        r'^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}\] \[DEBUG\] \[.*?:\s*\d+\(.*?\)\] Test: This is a DEBUG level log$',
+        output)
     assert "(" in output  # 确保有函数名
     assert ":" in output.split(" ")[3]  # 确保调用位置信息中包含冒号
 

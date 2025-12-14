@@ -19,11 +19,8 @@ class TradeController(BaseController):
     def login(self):
         """发起交易登录请求"""
         res = self.send_request(
-            "ReqUserLogin",
-            {
+            "ReqUserLogin", {
                 "BrokerID": self.conf['broker_id'],
                 "UserID": self.conf['investor_id'],
                 "Password": self.conf['password']
-            },
-            "ReqUserLogin"
-        )
+            }, "ReqUserLogin")

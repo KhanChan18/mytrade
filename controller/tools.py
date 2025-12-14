@@ -47,10 +47,12 @@ def calculate_contract_months() -> Tuple[Tuple[int, int], Tuple[int, int]]:
     speculation_year, speculation_month = (
         curr_year + 1, 1) if curr_month == 12 else (curr_year, curr_month + 1)
 
-    return (speculation_year, speculation_month), (delivery_year, delivery_month)
+    return (speculation_year, speculation_month), (delivery_year,
+                                                   delivery_month)
 
 
-def generate_contract_dict(config_path: str = "instrument.yml") -> Dict[str, List[str]]:
+def generate_contract_dict(
+        config_path: str = "instrument.yml") -> Dict[str, List[str]]:
     """
     生成包含投机/交割/全体合约的字典
     返回格式：
@@ -62,7 +64,8 @@ def generate_contract_dict(config_path: str = "instrument.yml") -> Dict[str, Lis
     """
     # 1. 读取配置 + 计算两类合约月份
     config = load_futures_config(config_path)
-    (spec_year, spec_month), (deliv_year, deliv_month) = calculate_contract_months()
+    (spec_year, spec_month), (deliv_year,
+                              deliv_month) = calculate_contract_months()
 
     # 2. 生成月份后缀
     spec_ym = f"{str(spec_year)[-2:]}{spec_month:02d}"  # 投机月后缀（如2601）
@@ -70,8 +73,8 @@ def generate_contract_dict(config_path: str = "instrument.yml") -> Dict[str, Lis
 
     # 3. 根源生成三类合约（无无效合约，无需过滤）
     speculation_contracts = []  # 投机合约
-    delivery_contracts = []     # 交割合约
-    all_contracts = []          # 全体合约
+    delivery_contracts = []  # 交割合约
+    all_contracts = []  # 全体合约
 
     for exch_info in config.values():
         if "products" not in exch_info:
@@ -86,8 +89,8 @@ def generate_contract_dict(config_path: str = "instrument.yml") -> Dict[str, Lis
                 # 分别追加到对应列表
                 speculation_contracts.append(spec_contract)
                 delivery_contracts.append(deliv_contract)
-                all_contracts.extend(
-                    [spec_contract, deliv_contract])  # 全体合约=投机+交割
+                all_contracts.extend([spec_contract,
+                                      deliv_contract])  # 全体合约=投机+交割
 
     # 4. 返回最终字典（含三个字段）
     return {
@@ -97,7 +100,8 @@ def generate_contract_dict(config_path: str = "instrument.yml") -> Dict[str, Lis
     }
 
 
-def generate_contract_exchange_map(config_path: str = "instrument.yml") -> Dict[str, str]:
+def generate_contract_exchange_map(
+        config_path: str = "instrument.yml") -> Dict[str, str]:
     """
     生成合约代码到交易所的映射字典
     返回格式：
@@ -140,7 +144,8 @@ def generate_contract_exchange_map(config_path: str = "instrument.yml") -> Dict[
                     contract_exchange_map[deliv_contract] = exch_code
 
         print(
-            f"Generated contract_exchange_map with {len(contract_exchange_map)} entries")
+            f"Generated contract_exchange_map with {len(contract_exchange_map)} entries"
+        )
         return contract_exchange_map
     except Exception as e:
         print(f"Error in generate_contract_exchange_map: {e}")
@@ -153,7 +158,8 @@ contract_exchange_map = None
 # 初始化全局合约-交易所映射
 
 
-def init_contract_exchange_map(config_path: str = "instrument.yml") -> Dict[str, str]:
+def init_contract_exchange_map(
+        config_path: str = "instrument.yml") -> Dict[str, str]:
     """
     初始化全局合约-交易所映射
     """

@@ -3,7 +3,4 @@
 from .market_data_spi import MarketDataSpi
 from .trade_spi import TradeSpi
 
-__all__ = [
-    'MarketDataSpi',
-    'TradeSpi'
-]
+__all__ = ['MarketDataSpi', 'TradeSpi']

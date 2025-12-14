@@ -33,10 +33,11 @@ class CSVHandler(DatabaseInterface):
             controller.tools.init_contract_exchange_map()
         for instrument_id, instrument_data in data_by_instrument.items():
             # 获取合约对应的交易所，必须存在于instrument.yml中
-            exchange = controller.tools.contract_exchange_map.get(instrument_id)
+            exchange = controller.tools.contract_exchange_map.get(
+                instrument_id)
             if not exchange:
-                main_logger.error(
-                    "CSVHandler", f"合约{instrument_id}不在instrument.yml配置中")
+                main_logger.error("CSVHandler",
+                                  f"合约{instrument_id}不在instrument.yml配置中")
                 continue
             # 提取品种前缀（字母部分）作为目录名
             symbol = ''.join([c for c in instrument_id if c.isalpha()])
@@ -58,21 +59,23 @@ class CSVHandler(DatabaseInterface):
             else:
                 df.to_csv(file_path, index=False, header=False, mode='a')
 
-    def load(self, table_name: str, limit: Optional[int] = None) -> pd.DataFrame:
+    def load(self,
+             table_name: str,
+             limit: Optional[int] = None) -> pd.DataFrame:
         # 获取合约对应的交易所，必须存在于instrument.yml中
         from controller.tools import contract_exchange_map
         exchange = contract_exchange_map.get(table_name)
         if not exchange:
-            main_logger.error(
-                "CSVHandler", f"合约{table_name}不在instrument.yml配置中")
+            main_logger.error("CSVHandler",
+                              f"合约{table_name}不在instrument.yml配置中")
             raise ValueError(f"合约{table_name}不在instrument.yml配置中")
         # 提取品种前缀（字母部分）作为目录名
         symbol = ''.join([c for c in table_name if c.isalpha()])
         if not symbol:
             main_logger.error("CSVHandler", f"合约{table_name}无法提取品种前缀")
             raise ValueError(f"合约{table_name}无法提取品种前缀")
-        file_path = os.path.join(
-            self.db_path, exchange, symbol, f"{table_name}.csv")
+        file_path = os.path.join(self.db_path, exchange, symbol,
+                                 f"{table_name}.csv")
 
         if not os.path.exists(file_path):
             raise FileNotFoundError(f"Table {table_name} not found")

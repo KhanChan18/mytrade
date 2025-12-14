@@ -16,7 +16,9 @@ class DatabaseInterface(ABC):
         pass
 
     @abstractmethod
-    def load(self, table_name: str, limit: Optional[int] = None) -> pd.DataFrame:
+    def load(self,
+             table_name: str,
+             limit: Optional[int] = None) -> pd.DataFrame:
         """从数据库加载数据"""
         pass
 

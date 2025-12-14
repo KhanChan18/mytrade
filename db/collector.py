@@ -24,7 +24,11 @@ DB_TYPE_MAPPING = {
 class DataCollector:
     """数据收集器，支持多种数据库和缓冲区功能"""
 
-    def __init__(self, db_type: str = "hdf5", buffer_size: int = 128, db_path: str = "db", db_name: str = None):
+    def __init__(self,
+                 db_type: str = "hdf5",
+                 buffer_size: int = 128,
+                 db_path: str = "db",
+                 db_name: str = None):
         self.buffer_size = buffer_size
         self.buffer: List[Dict[str, Any]] = []
         self.db_path = db_path
@@ -36,7 +40,8 @@ class DataCollector:
         if db_type not in DB_TYPE_MAPPING:
             supported_types = ', '.join(DB_TYPE_MAPPING.keys())
             raise ValueError(
-                f"Unsupported database type: {db_type}. Supported types: {supported_types}")
+                f"Unsupported database type: {db_type}. Supported types: {supported_types}"
+            )
 
         # 获取对应的处理器类和默认扩展名
         db_config = DB_TYPE_MAPPING[db_type]
@@ -55,7 +60,9 @@ class DataCollector:
             self.db_handler = handler_class(db_path, db_name)
 
         main_logger.info(
-            "DataCollector", f"initialized with {db_type} database and buffer size {buffer_size}")
+            "DataCollector",
+            f"initialized with {db_type} database and buffer size {buffer_size}"
+        )
 
     def add_data(self, data: Dict[str, Any]) -> None:
         """添加数据到缓冲区"""
@@ -69,7 +76,8 @@ class DataCollector:
         """将缓冲区中的数据写入数据库"""
         if self.buffer:
             main_logger.info(
-                "DataCollector", f"Flushing {len(self.buffer)} records to database")
+                "DataCollector",
+                f"Flushing {len(self.buffer)} records to database")
             self.db_handler.save(self.buffer)
             self.buffer.clear()
 
@@ -77,7 +85,9 @@ class DataCollector:
         """直接保存数据到数据库"""
         self.db_handler.save(data)
 
-    def load(self, table_name: str, limit: Optional[int] = None) -> pd.DataFrame:
+    def load(self,
+             table_name: str,
+             limit: Optional[int] = None) -> pd.DataFrame:
         """从数据库加载数据"""
         return self.db_handler.load(table_name, limit)
 
@@ -91,9 +101,13 @@ class DataCollector:
         self.db_handler.close()
         main_logger.info("DataCollector", "closed")
 
+
 # 工厂函数，用于创建DataCollector实例
 
 
-def create_data_collector(db_type: str = "hdf5", buffer_size: int = 128, db_path: str = "db", db_name: str = None) -> DataCollector:
+def create_data_collector(db_type: str = "hdf5",
+                          buffer_size: int = 128,
+                          db_path: str = "db",
+                          db_name: str = None) -> DataCollector:
     """创建数据收集器实例"""
     return DataCollector(db_type, buffer_size, db_path, db_name)

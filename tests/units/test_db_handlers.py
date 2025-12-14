@@ -16,6 +16,7 @@ import pandas as pd
 import sqlite3
 # 添加项目根目录到Python路径
 import pathlib
+
 sys.path.append(str(pathlib.Path(__file__).absolute().parents[3]))
 
 
@@ -64,12 +65,36 @@ class TestDBHandlers(unittest.TestCase):
 
         # 测试数据
         self.test_data = [
-            {"InstrumentID": f"ad{next_ym}", "Price": 100.0, "Volume": 10},
-            {"InstrumentID": f"ad{next_ym}", "Price": 101.0, "Volume": 20},
-            {"InstrumentID": f"ad{curr_ym}", "Price": 99.0, "Volume": 5},
-            {"InstrumentID": f"ag{next_ym}", "Price": 5000.0, "Volume": 15},
-            {"InstrumentID": f"ag{next_ym}", "Price": 5010.0, "Volume": 25},
-            {"InstrumentID": f"IM{next_ym}", "Price": 3000.0, "Volume": 8},
+            {
+                "InstrumentID": f"ad{next_ym}",
+                "Price": 100.0,
+                "Volume": 10
+            },
+            {
+                "InstrumentID": f"ad{next_ym}",
+                "Price": 101.0,
+                "Volume": 20
+            },
+            {
+                "InstrumentID": f"ad{curr_ym}",
+                "Price": 99.0,
+                "Volume": 5
+            },
+            {
+                "InstrumentID": f"ag{next_ym}",
+                "Price": 5000.0,
+                "Volume": 15
+            },
+            {
+                "InstrumentID": f"ag{next_ym}",
+                "Price": 5010.0,
+                "Volume": 25
+            },
+            {
+                "InstrumentID": f"IM{next_ym}",
+                "Price": 3000.0,
+                "Volume": 8
+            },
         ]
         # 保存月份后缀供测试用例使用
         self.curr_ym = curr_ym
@@ -93,12 +118,14 @@ class TestDBHandlers(unittest.TestCase):
 
         # 验证合约文件
         expected_instruments = [
-            f"ad{self.next_ym}", f"ad{self.curr_ym}", f"ag{self.next_ym}", f"IM{self.next_ym}"]
+            f"ad{self.next_ym}", f"ad{self.curr_ym}", f"ag{self.next_ym}",
+            f"IM{self.next_ym}"
+        ]
         for instrument_id in expected_instruments:
             exchange = contract_exchange_map.get(instrument_id, "default")
             symbol = ''.join([c for c in instrument_id if c.isalpha()])
-            file_path = os.path.join(
-                self.temp_dir, exchange, symbol, f"{instrument_id}.csv")
+            file_path = os.path.join(self.temp_dir, exchange, symbol,
+                                     f"{instrument_id}.csv")
             self.assertTrue(os.path.exists(file_path), f"合约文件 {file_path} 不存在")
 
             # 验证文件内容
@@ -110,8 +137,8 @@ class TestDBHandlers(unittest.TestCase):
     def test_sqlite_handler_save(self):
         """测试SQLiteHandler的save方法"""
         # 创建SQLiteHandler实例
-        sqlite_handler = SQLiteHandler(
-            db_path=self.temp_dir, db_name="test_market_data.db")
+        sqlite_handler = SQLiteHandler(db_path=self.temp_dir,
+                                       db_name="test_market_data.db")
 
         # 保存测试数据
         sqlite_handler.save(self.test_data)
@@ -148,8 +175,8 @@ class TestDBHandlers(unittest.TestCase):
     def test_hdf5_handler_save(self):
         """测试HDF5Handler的save方法"""
         # 创建HDF5Handler实例
-        hdf5_handler = HDF5Handler(
-            db_path=self.temp_dir, db_name="test_market_data.h5")
+        hdf5_handler = HDF5Handler(db_path=self.temp_dir,
+                                   db_name="test_market_data.h5")
 
         # 保存测试数据
         hdf5_handler.save(self.test_data)

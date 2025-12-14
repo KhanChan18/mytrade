@@ -29,27 +29,33 @@ class TestDataCollector(unittest.TestCase):
                 mock.patch.object(self.app._trading_client, 'run'))
             # 模拟logger.set_log_file和set_log_level方法
             stack.enter_context(mock.patch.object(main_logger, 'set_log_file'))
-            stack.enter_context(mock.patch.object(
-                main_logger, 'set_log_level'))
+            stack.enter_context(mock.patch.object(main_logger,
+                                                  'set_log_level'))
 
             # 调用data_collector方法（单进程模式）
-            self.app.data_collector(
-                platform="TEST", env="test", collector_id="test_id", count=1)
+            self.app.data_collector(platform="TEST",
+                                    env="test",
+                                    collector_id="test_id",
+                                    count=1)
 
             # 验证trading_client.run是否被正确调用
-            mock_run.assert_called_once_with(
-                "TEST", "test", api_type="md", exchanges="all")
+            mock_run.assert_called_once_with("TEST",
+                                             "test",
+                                             api_type="md",
+                                             exchanges="all")
 
     def test_data_collector_multi_process(self):
         """测试多进程模式下的data_collector"""
         # 模拟multiprocessing.Process和multiprocessing.Process.start方法
         with contextlib.ExitStack() as stack:
             # 模拟generate_contract_exchange_map函数，返回3个交易所
-            stack.enter_context(mock.patch('controller.tools.generate_contract_exchange_map', return_value={
-                'contract1': 'EXCH1',
-                'contract2': 'EXCH2',
-                'contract3': 'EXCH3'
-            }))
+            stack.enter_context(
+                mock.patch('controller.tools.generate_contract_exchange_map',
+                           return_value={
+                               'contract1': 'EXCH1',
+                               'contract2': 'EXCH2',
+                               'contract3': 'EXCH3'
+                           }))
 
             # 模拟multiprocessing.Process
             mock_process = stack.enter_context(
@@ -75,15 +81,17 @@ class TestDataCollector(unittest.TestCase):
 
         with contextlib.ExitStack() as stack:
             # 模拟generate_contract_exchange_map函数，返回3个交易所
-            stack.enter_context(mock.patch('controller.tools.generate_contract_exchange_map', return_value={
-                'contract1': 'EXCH1',
-                'contract2': 'EXCH2',
-                'contract3': 'EXCH3'
-            }))
+            stack.enter_context(
+                mock.patch('controller.tools.generate_contract_exchange_map',
+                           return_value={
+                               'contract1': 'EXCH1',
+                               'contract2': 'EXCH2',
+                               'contract3': 'EXCH3'
+                           }))
 
             # 模拟UUID生成
-            stack.enter_context(mock.patch(
-                'uuid.uuid4', side_effect=mock_uuids))
+            stack.enter_context(
+                mock.patch('uuid.uuid4', side_effect=mock_uuids))
             # 模拟multiprocessing.Process
             mock_process = stack.enter_context(
                 mock.patch('multiprocessing.Process'))
@@ -101,14 +109,15 @@ class TestDataCollector(unittest.TestCase):
             for i in range(3):
                 call_args = process_calls[i][1]
                 self.assertEqual(
-                    call_args['target'], self.app._process_manager._data_collector_process)
+                    call_args['target'],
+                    self.app._process_manager._data_collector_process)
                 # 验证进程参数是否正确，args应该包含(exchange, env, uuid, exchange_name)
                 self.assertEqual(call_args['args'][0], 'TEST')
                 self.assertEqual(call_args['args'][1], 'test')
                 self.assertEqual(call_args['args'][2], mock_uuids[i])
                 # 第三个参数应该是交易所名称
-                self.assertIn(call_args['args'][3], [
-                              'EXCH1', 'EXCH2', 'EXCH3'])
+                self.assertIn(call_args['args'][3],
+                              ['EXCH1', 'EXCH2', 'EXCH3'])
 
     def test_data_collector_process_log_file(self):
         """测试单个data_collector进程的日志文件设置"""
@@ -118,30 +127,31 @@ class TestDataCollector(unittest.TestCase):
 
         with contextlib.ExitStack() as stack:
             # 模拟UUID生成
-            stack.enter_context(mock.patch(
-                'uuid.uuid4', return_value=mock_uuid))
+            stack.enter_context(
+                mock.patch('uuid.uuid4', return_value=mock_uuid))
             # 模拟config模块中的LOG_PATH
-            stack.enter_context(mock.patch(
-                'utils.process.LOG_PATH', '/mock/logs'))
+            stack.enter_context(
+                mock.patch('utils.process.LOG_PATH', '/mock/logs'))
             # 模拟os.path.join函数
-            mock_path_join = stack.enter_context(mock.patch(
-                'os.path.join', side_effect=lambda *args: '/'.join(args)))
+            mock_path_join = stack.enter_context(
+                mock.patch('os.path.join',
+                           side_effect=lambda *args: '/'.join(args)))
             # 模拟trading_client.run方法
-            stack.enter_context(mock.patch.object(
-                self.app._trading_client, 'run'))
+            stack.enter_context(
+                mock.patch.object(self.app._trading_client, 'run'))
             # 模拟logger.set_log_file和set_log_level方法
             mock_set_log_file = stack.enter_context(
                 mock.patch.object(main_logger, 'set_log_file'))
-            stack.enter_context(mock.patch.object(
-                main_logger, 'set_log_level'))
+            stack.enter_context(mock.patch.object(main_logger,
+                                                  'set_log_level'))
             stack.enter_context(mock.patch.object(main_logger, 'info'))
 
             # 直接调用单个进程的方法（单进程模式）
             self.app.data_collector(platform="TEST", env="test", count=1)
 
             # 验证日志文件路径被正确构造
-            mock_path_join.assert_any_call(
-                '/mock/logs', f'data_collector_{mock_uuid}.log')
+            mock_path_join.assert_any_call('/mock/logs',
+                                           f'data_collector_{mock_uuid}.log')
 
             # 验证设置了正确的日志文件
             mock_set_log_file.assert_any_call(
@@ -153,25 +163,25 @@ class TestDataCollector(unittest.TestCase):
 
         with contextlib.ExitStack() as stack:
             # 模拟trading_client.run方法
-            stack.enter_context(mock.patch.object(
-                self.app._trading_client, 'run'))
+            stack.enter_context(
+                mock.patch.object(self.app._trading_client, 'run'))
             # 模拟logger相关方法
             stack.enter_context(mock.patch.object(main_logger, 'set_log_file'))
-            stack.enter_context(mock.patch.object(
-                main_logger, 'set_log_level'))
+            stack.enter_context(mock.patch.object(main_logger,
+                                                  'set_log_level'))
 
             # 使用不同的参数调用data_collector
-            self.app.data_collector(
-                platform="CUSTOM_PLATFORM",
-                env="custom_env",
-                collector_id="custom_id",
-                count=1
-            )
+            self.app.data_collector(platform="CUSTOM_PLATFORM",
+                                    env="custom_env",
+                                    collector_id="custom_id",
+                                    count=1)
 
             # 验证参数是否被正确传递
             self.app._trading_client.run.assert_called_once_with(
-                "CUSTOM_PLATFORM", "custom_env", api_type="md", exchanges="all"
-            )
+                "CUSTOM_PLATFORM",
+                "custom_env",
+                api_type="md",
+                exchanges="all")
 
     def test_logger_daily_rotation(self):
         """测试日志按日滚动功能"""
@@ -212,8 +222,8 @@ class TestDataCollector(unittest.TestCase):
             # 验证日志文件路径（使用os.path.normpath处理路径分隔符差异）
             expected_path_2 = os.path.normpath(
                 "/mock/logs/data_collector_test-uuid_2025-12-14.log")
-            self.assertEqual(os.path.normpath(
-                second_log_file), expected_path_2)
+            self.assertEqual(os.path.normpath(second_log_file),
+                             expected_path_2)
 
             # 验证两个日志文件路径不同
             self.assertNotEqual(first_log_file, second_log_file)

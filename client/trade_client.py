@@ -4,14 +4,9 @@ import time
 from openctp_ctp import thosttraderapi as tdapi
 
 # 自定义模块
-from utils.signal import (
-    EXIT_FLAG, register_signals,
-    wait_for_exit
-)
+from utils.signal import (EXIT_FLAG, register_signals, wait_for_exit)
 from utils.context import CTPAPIContext, BackgroundThreadContext, AppContext
-from config import (
-    STREAM_PATH, IS_PRODUCTION_MODE, get_server_config
-)
+from config import (STREAM_PATH, IS_PRODUCTION_MODE, get_server_config)
 from controller import TradeController
 from utils.logger import main_logger
 
@@ -108,11 +103,11 @@ class TradeClient:
         :param ctp_ctr: TradeController实例
         """
         if ctp_ctr.is_logged_in:
-            main_logger.info(
-                "Main", "Login successful, starting business operations")
+            main_logger.info("Main",
+                             "Login successful, starting business operations")
             # 1. 查询合约
-            ctp_ctr.QryInstrument(
-                exchangeid="SHFE", instrumentid=DEFAULT_INSTRUMENT_STR)
+            ctp_ctr.QryInstrument(exchangeid="SHFE",
+                                  instrumentid=DEFAULT_INSTRUMENT_STR)
             ctp_ctr.semaphore.acquire(timeout=5)
             time.sleep(0.5)
 
@@ -134,14 +129,16 @@ class TradeClient:
         :param app_context: 应用上下文实例
         """
         main_logger.info(
-            "Main", f"Starting trade client | Platform: {platform} | Environment: {env}")
+            "Main",
+            f"Starting trade client | Platform: {platform} | Environment: {env}"
+        )
 
         try:
             # 使用上下文管理器管理API资源
-            with CTPAPIContext(
-                api_create_func=tdapi.CThostFtdcTraderApi.CreateFtdcTraderApi,
-                create_args=(STREAM_PATH, IS_PRODUCTION_MODE)
-            ) as ctp_api:
+            with CTPAPIContext(api_create_func=tdapi.CThostFtdcTraderApi.
+                               CreateFtdcTraderApi,
+                               create_args=(STREAM_PATH,
+                                            IS_PRODUCTION_MODE)) as ctp_api:
                 # 设置API
                 ctp_ctr = self._setup_api(ctp_api, app_context, platform, env)
 
@@ -160,13 +157,12 @@ class TradeClient:
                     return
 
                 # 使用上下文管理器管理后台线程
-                with BackgroundThreadContext(
-                    target=_trading_event_loop,
-                    args=(ctp_api,)
-                ):
+                with BackgroundThreadContext(target=_trading_event_loop,
+                                             args=(ctp_api, )):
                     # 主线程等待退出
                     main_logger.info(
-                        "Main", "Trade client started (Press Ctrl+C to exit)...")
+                        "Main",
+                        "Trade client started (Press Ctrl+C to exit)...")
                     wait_for_exit()
 
                     # 停止控制器

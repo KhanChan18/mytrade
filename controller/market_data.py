@@ -42,15 +42,18 @@ class MarketDataController(BaseController):
         # 更新全局变量和tools模块的全局变量
         global contract_dict
         contract_dict = generate_contract_dict()  # 使用默认的instrument.yml路径
-        tools.contract_exchange_map = generate_contract_exchange_map()  # 使用默认的instrument.yml路径
+        tools.contract_exchange_map = generate_contract_exchange_map(
+        )  # 使用默认的instrument.yml路径
         init_contract_exchange_map()  # 使用默认的instrument.yml路径
 
         # 调试：检查contract_exchange_map是否已经初始化
         main_logger.debug(
-            "MDController", f"contract_exchange_map type: {type(tools.contract_exchange_map)}")
+            "MDController",
+            f"contract_exchange_map type: {type(tools.contract_exchange_map)}")
         if tools.contract_exchange_map is None:
             main_logger.error(
-                "MDController", "contract_exchange_map is None after initialization!")
+                "MDController",
+                "contract_exchange_map is None after initialization!")
 
         # 解析exchanges参数
         if exchanges == "all":
@@ -73,8 +76,8 @@ class MarketDataController(BaseController):
                 buffer_size=BUFFER_SIZE,
                 # 确保数据库文件保存在appfiles/mydb/{db_type}/目录下
                 db_path=os.path.join(DB_PATH, DB_TYPE.lower()),
-                db_name=f"{exch}.{DB_TYPE.lower()}" if DB_TYPE != "CSV" else None
-            )
+                db_name=f"{exch}.{DB_TYPE.lower()}"
+                if DB_TYPE != "CSV" else None)
 
         # 创建并注册行情数据SPI回调
         self.spi = MarketDataSpi(self)
@@ -86,14 +89,11 @@ class MarketDataController(BaseController):
     def login(self):
         """发起行情登录请求"""
         res = self.send_request(
-            "ReqUserLogin",
-            {
+            "ReqUserLogin", {
                 "BrokerID": self.conf['broker_id'],
                 "UserID": self.conf['investor_id'],
                 "Password": self.conf['password']
-            },
-            "ReqUserLogin"
-        )
+            }, "ReqUserLogin")
 
     def subscribe_market_data(self):
         """订阅行情数据"""
@@ -104,11 +104,14 @@ class MarketDataController(BaseController):
             if exchange in self.exchanges:
                 filtered_instrument_list.append(instrument)
 
-        instrument_list = [inst.encode("utf-8")
-                           for inst in filtered_instrument_list]
+        instrument_list = [
+            inst.encode("utf-8") for inst in filtered_instrument_list
+        ]
         self.total_to_subscribe = len(instrument_list)
         main_logger.info(
-            "MDController", f"Subscribing to {self.total_to_subscribe} market data contracts from exchanges: {', '.join(self.exchanges)}")
+            "MDController",
+            f"Subscribing to {self.total_to_subscribe} market data contracts from exchanges: {', '.join(self.exchanges)}"
+        )
         self.api.SubscribeMarketData(instrument_list, len(instrument_list))
 
     def process_market_data(self, market_data_dict):
@@ -116,15 +119,16 @@ class MarketDataController(BaseController):
         # 获取合约代码
         instrument_id = market_data_dict.get("InstrumentID")
         if not instrument_id:
-            main_logger.error(
-                "MDController", "Market data without InstrumentID")
+            main_logger.error("MDController",
+                              "Market data without InstrumentID")
             return
 
         # 找到对应的交易所
         exchange = tools.contract_exchange_map.get(instrument_id)
         if not exchange:
             main_logger.error(
-                "MDController", f"Exchange not found for instrument {instrument_id}")
+                "MDController",
+                f"Exchange not found for instrument {instrument_id}")
             return
 
         # 将数据添加到对应的交易所数据收集器
@@ -132,4 +136,5 @@ class MarketDataController(BaseController):
             self.data_collectors[exchange].add_data(market_data_dict)
         else:
             main_logger.error(
-                "MDController", f"No data collector found for exchange {exchange}")
+                "MDController",
+                f"No data collector found for exchange {exchange}")

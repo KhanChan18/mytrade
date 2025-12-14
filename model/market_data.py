@@ -20,8 +20,8 @@ class MarketData:
         self.UpdateMillisec = getattr(pDepthMarketData, "UpdateMillisec", 0)
         self.LastPrice = getattr(pDepthMarketData, "LastPrice", 0)
         self.Volume = getattr(pDepthMarketData, "Volume", 0)
-        self.PreSettlementPrice = getattr(
-            pDepthMarketData, "PreSettlementPrice", 0)
+        self.PreSettlementPrice = getattr(pDepthMarketData,
+                                          "PreSettlementPrice", 0)
         self.PreClosePrice = getattr(pDepthMarketData, "PreClosePrice", 0)
         self.PreOpenInterest = getattr(pDepthMarketData, "PreOpenInterest", 0)
         self.OpenPrice = getattr(pDepthMarketData, "OpenPrice", 0)

@@ -187,7 +187,8 @@ class DataCollector:
 
         main_logger.info(
             "DataCollector",
-            f"initialized with {db_type} database and buffer size {buffer_size}"
+            f"initialized with {db_type} database "
+            f"and buffer size {buffer_size}"
         )
 
     def add_data(self, data: Dict[str, Any]) -> None:

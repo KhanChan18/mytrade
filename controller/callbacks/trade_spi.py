@@ -21,7 +21,8 @@ class TradeSpi(tdapi.CThostFtdcTraderSpi):
     def OnRspUserLogin(self, pRspUserLogin, pRspInfo, nRequestID, bIsLast):
         """交易登录响应"""
         # 使用统一的错误检查方法
-        if self.controller.check_response_error("TradeController", pRspInfo, "Login"):
+        if self.controller.check_response_error("TradeController", pRspInfo,
+                                                "Login"):
             self.controller.semaphore.release(bIsLast)
             return
 

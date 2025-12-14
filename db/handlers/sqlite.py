@@ -24,8 +24,8 @@ class SQLiteHandler(DatabaseInterface):
             # 检查InstrumentID是否存在
             instrument_id = item.get("InstrumentID")
             if not instrument_id:
-                main_logger.error(
-                    "SQLiteHandler", f"缺失InstrumentID的记录: {item}")
+                main_logger.error("SQLiteHandler",
+                                  f"缺失InstrumentID的记录: {item}")
                 continue
             if instrument_id not in data_by_instrument:
                 data_by_instrument[instrument_id] = []
@@ -42,7 +42,9 @@ class SQLiteHandler(DatabaseInterface):
         finally:
             conn.close()
 
-    def load(self, table_name: str, limit: Optional[int] = None) -> pd.DataFrame:
+    def load(self,
+             table_name: str,
+             limit: Optional[int] = None) -> pd.DataFrame:
         # 每次操作创建新连接
         conn = sqlite3.connect(self.db_file)
         try:
